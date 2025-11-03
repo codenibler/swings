@@ -20,28 +20,51 @@ def main():
             decreasing_line_color="indianred",
             name="Price",
         )
-    )
+    ),
     fig.add_trace(
         go.Scatter(
-            x=data["datetime"][data['swing_high']],
-            y=data.loc[data['swing_high'], 'high'],
-            mode="lines",
-            line=dict(color="#1f77b4", width=3),
-            connectgaps=False,
-            name="Pivot High",
+            x=data["datetime"][data['swing_type'] == 'HH'],
+            y=data.loc[data['swing_type'] == 'HH', 'high'],
+            mode="markers+text",
+            marker=dict(symbol="triangle-down", size=12, color="firebrick", line=dict(width=1,color="white")),
+            text=["HH"] * (data['swing_type'] == 'HH').sum(),
+            textposition="top center",
+            name="HH",
         )
-    )
-
+    ),
     fig.add_trace(
         go.Scatter(
-            x=data["datetime"][data['swing_low']],
-            y=data.loc[data['swing_low'], 'low'],
-            mode="lines",
-            line=dict(color="#d62728", width=3),
-            connectgaps=False,
-            name="Pivot Low",
+            x=data["datetime"][data['swing_type'] == 'HL'],
+            y=data.loc[data['swing_type'] == 'HL', 'low'],
+            mode="markers+text",
+            marker=dict(symbol="triangle-up", size=12, color="seagreen", line=dict(width=1,color="white")),
+            text=["HL"] * (data['swing_type'] == 'HL').sum(),
+            textposition="bottom center",
+            name="HL",
         )
-    )
+    ),
+    fig.add_trace(
+        go.Scatter(
+            x=data["datetime"][data['swing_type'] == 'LL'],
+            y=data.loc[data['swing_type'] == 'LL', 'low'],
+            mode="markers+text",
+            marker=dict(symbol="triangle-up", size=12, color="green", line=dict(width=1,color="white")),
+            text=["LL"] * (data['swing_type'] == 'LL').sum(),
+            textposition="bottom center",
+            name="LL",
+        )
+    ),
+    fig.add_trace(
+        go.Scatter(
+            x=data["datetime"][data['swing_type'] == 'LH'],
+            y=data.loc[data['swing_type'] == 'LH', 'high'],
+            mode="markers+text",
+            marker=dict(symbol="triangle-down", size=12, color="firebrick", line=dict(width=1,color="white")),
+            text=["LH"] * (data['swing_type'] == 'LH').sum(),
+            textposition="top center",
+            name="LH",
+        )
+    ),
 
     fig.update_layout(
         title="Pivot Points",

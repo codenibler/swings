@@ -27,33 +27,8 @@ def generate_data(dataset):
     df['swing_high'] = swing_highs.shift(-1) # CONSIDER SHIFT FOR VISUALIZATION
     df['swing_low'] = swing_lows.shift(-1) # CONSIDER SHIFT FOR VISUALIZATION
 
-    # mark the index (or position) whenever a swing high occurs
-    df.loc[df['swing_high'], 'last_swing_high_idx'] = df.index[df['swing_high']]
-    df['last_swing_high_idx'] = df['last_swing_high_idx'].ffill()        
-
-    higher_highs = (
-        (df[df['swing_high']['high'] >  df.iloc['last_swing_high_idx']['high']])
-    )
-    lower_lows = (
-        (df[df['swing_low']['low'] >  df.iloc['last_swing_low_idx']['low']])
-    )
-    df['higher_high'] = higher_highs
-    df['lower_low'] = lower_lows
-    lower_high = (
-        df[~df['swing_high']['higher_high']]
-    )
-    lower_high = (
-        df[~df['swing_high']['higher_high']]
-    )
-
-    df.drop(columns=['PrevHigh', 'PrevLow', 'PrevPrevLow', 'PrevPrevHigh', 'last_swing_high_idx'])
-    
-    print(f"Candles: {len(df)}")
-    print(f"Higher Highs: {len(df[df['higher_high'] == True])}")
-    print(f"Lower Highs: {len(df[df['lower_high'] == True])}")
-    print(f"Higher Lows: {len(df[df['higher_low'] == True])}")
-    print(f"Lower Lows: {len(df[df['lower_low'] == True])}")
-
+   
+    df = df.drop(columns=['PrevHigh', 'PrevLow', 'PrevPrevLow', 'PrevPrevHigh'])
     df = df.dropna()
     
     # =============== Cleaning ===============
@@ -61,4 +36,37 @@ def generate_data(dataset):
     return df
 
 if __name__ == "__main__":
-    generate_data('data/in_sample1.csv')
+    
+    df = generate_data('data/in_sample1.csv')
+    df['swing_type'] = pd.NA
+
+    previous_high = None
+    previous_high_idx = None
+    previous_low = None
+    previous_low_idx = None
+
+    for candle in df.itertuples():
+        if candle.swing_low and previous_low is not None:
+            if candle.low < previous_low: 
+                df.loc[candle.Index, 'swing_type'] = 'LL'
+                previous_low = candle.low
+            else:
+                df.loc[candle.Index, 'swing_type'] = 'HL'
+                previous_low = candle.low
+
+        if candle.swing_high and previous_high is not None:
+            if candle.high > previous_high: 
+                df.loc[candle.Index, 'swing_type'] = 'HH'
+                previous_high = candle.high
+            else:
+                df.loc[candle.Index, 'swing_type'] = 'LH'
+                previous_high = candle.high
+
+        if candle.swing_low and previous_low is None:
+            df.loc[candle.Index, 'swing_type'] = 'HL'
+            previous_low = candle.low
+        if candle.swing_high and previous_high is None:
+            df.loc[candle.Index, 'swing_type'] = 'LH'
+            previous_high = candle.high
+
+    df.to_csv("pivots.csv")
