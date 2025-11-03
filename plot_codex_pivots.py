@@ -5,9 +5,6 @@ import plotly.graph_objects as go
 def main():
     data = pd.read_csv("pivots.csv", parse_dates=["datetime"]).tail(10000)
 
-    pivot_high = data["high"].where(data["swing_high"])
-    pivot_low = data["low"].where(data["swing_low"])
-
     fig = go.Figure()
     fig.add_trace(
         go.Candlestick(
@@ -21,33 +18,41 @@ def main():
             name="Price",
         )
     )
+
     fig.add_trace(
         go.Scatter(
-            x=data["datetime"][data['swing_high']],
-            y=data.loc[data['swing_high'], 'high'],
-            mode="lines",
-            line=dict(color="#1f77b4", width=3),
-            connectgaps=False,
-            name="Pivot High",
+            x=data.loc[data['swing_high'], 'datetime'],
+            y=data.loc[data['swing_high'], 'swing_high_price'],
+            mode="markers+text",
+            marker=dict(color="#1f77b4", size=8),
+            text=data.loc[data['swing_high'], 'higher_high'].map(
+                {True: "HH", False: "LH"}
+            ),
+            textposition="top center",
+            name="Swing Highs",
         )
     )
 
     fig.add_trace(
         go.Scatter(
-            x=data["datetime"][data['swing_low']],
-            y=data.loc[data['swing_low'], 'low'],
-            mode="lines",
-            line=dict(color="#d62728", width=3),
-            connectgaps=False,
-            name="Pivot Low",
+            x=data.loc[data['swing_low'], 'datetime'],
+            y=data.loc[data['swing_low'], 'swing_low_price'],
+            mode="markers+text",
+            marker=dict(color="#d62728", size=8),
+            text=data.loc[data['swing_low'], 'lower_low'].map(
+                {True: "LL", False: "HL"}
+            ),
+            textposition="bottom center",
+            name="Swing Lows",
         )
     )
 
     fig.update_layout(
-        title="Pivot Points",
+        title="Codex Pivot Structure (HH, LH, HL, LL)",
         xaxis_title="Time",
         yaxis_title="Price",
         xaxis_rangeslider_visible=False,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
 
     fig.update_xaxes(

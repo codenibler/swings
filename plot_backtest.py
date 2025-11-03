@@ -129,3 +129,6 @@ def plot_backtest(data):
     )
     fig.update_layout(xaxis_rangeslider_visible=False)
     fig.show()
+
+if __name__ == "__main__":
+    plot_backtest(pd.read_csv('data/in_sample1.csv'))
