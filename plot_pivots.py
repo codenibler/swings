@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 
 
 def main():
-    data = pd.read_csv("pivots_with_legs.csv", parse_dates=["datetime"]).tail(10000)
+    data = pd.read_csv("pivots_with_fibs.csv", parse_dates=["datetime"]).tail(10000)
 
     pivot_high = data["high"].where(data["swing_high"])
     pivot_low = data["low"].where(data["swing_low"])
@@ -72,6 +72,24 @@ def main():
             mode="lines",
             line=dict(color='Purple', width=3),
             name="Up Leg",
+        )
+    ),
+    fig.add_trace(
+        go.Scatter(
+            x=data["datetime"][(data['datetime'] > data['leg_start_time']) & (data['datetime'] < data['leg_end_time'])],
+            y=data['fib786'][(data['datetime'] > data['leg_start_time']) & (data['datetime'] < data['leg_end_time'])],
+            mode="lines",
+            line=dict(color='brown', width=3),
+            name="FIB 786",
+        )
+    ),
+    fig.add_trace(
+        go.Scatter(
+            x=data["datetime"][(data['datetime'] > data['leg_start_time']) & (data['datetime'] < data['leg_end_time'])],
+            y=data['fib786'][(data['datetime'] > data['leg_start_time']) & (data['datetime'] < data['leg_end_time'])],
+            mode="lines",
+            line=dict(color='brown', width=3),
+            name="FIB 786",
         )
     ),
 
