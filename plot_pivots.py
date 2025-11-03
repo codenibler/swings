@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 
 
 def main():
-    data = pd.read_csv("pivots.csv", parse_dates=["datetime"]).tail(10000)
+    data = pd.read_csv("pivots_with_legs.csv", parse_dates=["datetime"]).tail(10000)
 
     pivot_high = data["high"].where(data["swing_high"])
     pivot_low = data["low"].where(data["swing_low"])
@@ -61,8 +61,17 @@ def main():
             mode="markers+text",
             marker=dict(symbol="triangle-down", size=12, color="firebrick", line=dict(width=1,color="white")),
             text=["LH"] * (data['swing_type'] == 'LH').sum(),
-            textposition="top center",
+            textposition="bottom center",
             name="LH",
+        )
+    ),
+    fig.add_trace(
+        go.Scatter(
+            x=data["datetime"][(data['datetime'] > data['leg_start_time']) & (data['datetime'] < data['leg_end_time']) & (data['leg_direction'] == 1)],
+            y=data['high'],
+            mode="lines",
+            line=dict(color='Purple', width=3),
+            name="Up Leg",
         )
     ),
 
