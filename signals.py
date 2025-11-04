@@ -1,4 +1,5 @@
 import pandas as pd 
+import numpy as np
 import pandas_ta as ta
 
 # LVN STRATEGY
@@ -10,6 +11,14 @@ import pandas_ta as ta
 def generate_data(dataset):
     # =============== Indicators ================
     df = pd.read_csv(dataset).set_index('datetime')
+    df.index = pd.to_datetime(df.index)
+    df['ema20'] = df['close'].ewm(span=20).mean()
+    df['ema50'] = df['close'].ewm(span=50).mean()
+    df['uptrend'] = df['ema20'] > df['ema50']
+    df['atr'] = ta.atr(high=df['high'], low=df['close'], close=df['close'], length=14)
+    df['rsi'] = ta.rsi(close=df['close'], length=14)
+    df[['uptrend', 'atr', 'rsi']] = df[['uptrend', 'atr', 'rsi']].shift(1) 
+    df['time_block'] = df.index.hour // 3
     
     # =============== Swing Logic ===============
     df['PrevHigh'] = df['high'].shift(1)
@@ -27,8 +36,7 @@ def generate_data(dataset):
     df['swing_high'] = swing_highs.shift(-1) # CONSIDER SHIFT FOR VISUALIZATION
     df['swing_low'] = swing_lows.shift(-1) # CONSIDER SHIFT FOR VISUALIZATION
 
-   
-    df = df.drop(columns=['PrevHigh', 'PrevLow', 'PrevPrevLow', 'PrevPrevHigh'])
+    df = df.drop(columns=['PrevHigh', 'PrevLow', 'PrevPrevLow', 'PrevPrevHigh', 'ema20', 'ema50'])
     df = df.dropna()
     
     # =============== Cleaning ===============
@@ -37,7 +45,7 @@ def generate_data(dataset):
 
 if __name__ == "__main__":
     
-    df = generate_data('data/in_sample1.csv')
+    df = generate_data('market_data/in_sample1.csv')
     df['swing_type'] = pd.NA
 
     previous_high = None
