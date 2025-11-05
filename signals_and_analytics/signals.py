@@ -45,7 +45,7 @@ def generate_data(dataset):
 
 if __name__ == "__main__":
     
-    df = generate_data('market_data/in_sample1.csv')
+    df = generate_data('market_data/in_sample1_30m_NY_LDN.csv')
     df['swing_type'] = pd.NA
 
     previous_high = None
@@ -77,4 +77,4 @@ if __name__ == "__main__":
             df.loc[candle.Index, 'swing_type'] = 'LH'
             previous_high = candle.high
 
-    df.to_csv("pivots.csv")
+    df.to_csv("pivot_data/pivots_30m_NY_LDN.csv")

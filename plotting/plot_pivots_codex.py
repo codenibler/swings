@@ -62,7 +62,7 @@ def _plot_legs(fig: go.Figure, data: pd.DataFrame) -> None:
 
 
 def main():
-    data = pd.read_csv("pivots_with_fibs.csv")
+    data = pd.read_csv("pivot_data/pivots_with_fibs_30m.csv")
     data = _parse_datetime_columns(data, ["datetime", "leg_start_time", "leg_end_time"])
 
     fig = go.Figure()
@@ -81,22 +81,30 @@ def main():
     fig.add_trace(
         go.Scatter(
             x=data["datetime"][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
+            y=data['fib75'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
+            mode="markers",
+            marker=dict(color='#f41d0b', symbol='diamond-wide', size=25),
+            name="FIB 75",
+        )
+    ),
+    fig.add_trace(
+        go.Scatter(
+            x=data["datetime"][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
             y=data['fib50'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
             mode="markers",
-            marker=dict(color='green'),
+            marker=dict(color='#e58b1a', symbol='diamond-wide',size=25),
             name="FIB 50",
         )
     ),
     fig.add_trace(
         go.Scatter(
             x=data["datetime"][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
-            y=data['fib786'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
+            y=data['fib25'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
             mode="markers",
-            marker=dict(color='brown'),
-            name="FIB 786",
+            marker=dict(color='#9fac15', symbol='diamond-wide',size=25),
+            name="FIB 25",
         )
     ),
-
 
 
 

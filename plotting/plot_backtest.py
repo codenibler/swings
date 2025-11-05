@@ -84,29 +84,50 @@ def plot_backtest(data):
         ),
         row=1,
         col=1
-    )
+    )   
     fig.add_trace(
         go.Scatter(
-            x=data["datetime"][~data['swing_high'].isna()],
-            y=data.loc[~data['swing_high'].isna(), 'high'],
+            x=data["datetime"][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time']) & (data['leg_pct'] > 0.0015)],
+            y=data['fib50'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time']) & (data['leg_pct'] > 0.0015)],
             mode="markers",
-            marker=dict(symbol="circle", size=12, color="green"),
-            name="Pivot",
+            marker=dict(color='green'),
+            name="FIB 50",
         ),
         row=1,
         col=1
-    )
+    ),
     fig.add_trace(
         go.Scatter(
-            x=data["datetime"][~data['swing_low'].isna()],
-            y=data.loc[~data['swing_low'].isna(), 'low'],
+            x=data["datetime"][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time']) & (data['leg_pct'] > 0.0015)],
+            y=data['fib786'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time']) & (data['leg_pct'] > 0.0015)],
             mode="markers",
-            marker=dict(symbol="circle", size=12, color="red"),
-            name="Pivot",
+            marker=dict(color='brown'),
+            name="FIB 786",
         ),
         row=1,
         col=1
-    )
+    ),
+    legs = data.dropna(subset=["leg_start_time", "leg_end_time", "leg_start_price", "leg_end_price"])
+    legs = legs[legs['leg_pct'] > 0.0015]
+
+    def _leg_color(row):
+        return "#2ca02c" if row.leg_end_price >= row.leg_start_price else "#d62728"
+
+    for row in legs.itertuples():
+        color = _leg_color(row)
+        fig.add_trace(
+            go.Scatter(
+                x=[row.leg_start_time, row.leg_end_time],
+                y=[row.leg_start_price, row.leg_end_price],
+                mode="lines+markers+text",
+                line=dict(color=color, width=2),
+                marker=dict(size=8, color=color),
+                text=[f"{'LH' if row.swing_type == 'LL' else 'HL'}", f"{row.swing_type}"],
+                textposition="top center",
+                name="Leg",
+                showlegend=False,
+            )
+        )
     
     # ============ EQUITY ================
     traces = (
