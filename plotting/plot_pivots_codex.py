@@ -62,7 +62,7 @@ def _plot_legs(fig: go.Figure, data: pd.DataFrame) -> None:
 
 
 def main():
-    data = pd.read_csv("pivot_data/pivots_with_fibs_30m.csv")
+    data = pd.read_csv("pivot_data/advanced_leg_analytics_30m_NY_LDN.csv")
     data = _parse_datetime_columns(data, ["datetime", "leg_start_time", "leg_end_time"])
 
     fig = go.Figure()
@@ -117,13 +117,6 @@ def main():
         yaxis_title="Price",
         xaxis_rangeslider_visible=False,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-    )
-
-    fig.update_xaxes(
-        rangebreaks=[
-            dict(bounds=["sat", "mon"]),
-            dict(bounds=[16, 9], pattern="hour"),
-        ]
     )
 
     fig.show()

@@ -1,5 +1,5 @@
 import pandas as pd 
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 @dataclass
 class Leg:
@@ -31,6 +31,8 @@ score100 = 0
 leg_count = 0
 leg_lengths = 0
 current_leg = None
+
+full_retracements = []
 
 for candle in df.itertuples():
     # Found a leg 
@@ -86,6 +88,7 @@ for candle in df.itertuples():
                 if candle.low <= current_leg.start_price and current_leg.hit100 != True:
                     score100 += 1
                     df.loc[current_leg.end_ts, 'fib100_retracement'] = True
+                    full_retracements.append(current_leg)
                     current_leg.hit100 = True
             else:
                 if candle.high >= current_leg.fib25 and current_leg.hit25 != True:
@@ -103,6 +106,7 @@ for candle in df.itertuples():
                 if candle.high >= current_leg.start_price and current_leg.hit100 != True:
                     score100 += 1
                     df.loc[current_leg.end_ts, 'fib100_retracement'] = True
+                    full_retracements.append(current_leg)
                     current_leg.hit100 = True
 
 
@@ -116,4 +120,7 @@ print(f"Legs Considered: {leg_count}")
 print(f"Average Leg Length: {(leg_lengths/leg_count)} Bars")
 df.to_csv('pivot_data/advanced_leg_analytics_30m_NY_LDN.csv')
 
+full = [asdict(leg) for leg in full_retracements]
+full = pd.DataFrame(full)
+full.to_csv('pivot_data/full_retracements.csv', index=False)
 

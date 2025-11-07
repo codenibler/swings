@@ -1,6 +1,8 @@
 import pandas as pd 
 
-df = pd.read_csv("pivot_data/pivots_30m_NY_LDN.csv").set_index('datetime')
+df = pd.read_csv("pivot_data/pivots_30m_NY_LDN.csv")
+df['datetime'] = pd.to_datetime(df['datetime']) 
+df = df.set_index('datetime')
 
 recent_hl = None
 recent_hl_index = None
@@ -12,7 +14,7 @@ recent_lh_index = None
 
 for candle in df.itertuples():
     if candle.swing_type == 'HH':
-        if recent_hl is not None:
+        if recent_hl is not None and recent_hl_index.day == candle.Index.day:
             df.loc[candle.Index, 'leg_start_time'] = recent_hl_index
             df.loc[candle.Index, 'leg_start_price'] = recent_hl 
             df.loc[candle.Index, 'leg_end_time'] = candle.Index
@@ -22,7 +24,7 @@ for candle in df.itertuples():
             recent_hl = None
             recent_hl_index = None
     if candle.swing_type == 'LL':
-        if recent_lh is not None:
+        if recent_lh is not None and recent_lh_index.day == candle.Index.day:
             df.loc[candle.Index, 'leg_start_time'] = recent_lh_index
             df.loc[candle.Index, 'leg_start_price'] = recent_lh 
             df.loc[candle.Index, 'leg_end_time'] = candle.Index
