@@ -3,7 +3,7 @@ import pandas as pd
 
 full = pd.read_csv('pivot_data/full_retracements.csv')
 full['end_ts'] = pd.to_datetime(full['end_ts'])
-data = pd.read_csv('pivot_data/advanced_leg_analytics_30m_NY_LDN.csv')
+data = pd.read_csv('pivot_data/leg_analytics.csv')
 data['datetime'] = pd.to_datetime(data['datetime'])
 
 count10, count20, count30, count40, fully = 0,0,0,0,0
