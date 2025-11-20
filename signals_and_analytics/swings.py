@@ -1,6 +1,7 @@
 import pandas as pd 
 import numpy as np
 import pandas_ta as ta
+import argparse
 
 # LVN STRATEGY
 # - Find Leg Patterns: 
@@ -38,14 +39,17 @@ def generate_data(dataset):
 
     df = df.drop(columns=['PrevHigh', 'PrevLow', 'PrevPrevLow', 'PrevPrevHigh', 'ema20', 'ema50'])
     df = df.dropna()
-    
-    # =============== Cleaning ===============
-    df.to_csv('pivots.csv')
-    return df
+        return df
+
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', type=str, default='market_data/in_sample/in_sample1.csv')
+    parser.add_argument('--output', type=str, default='pivot_data/swings.csv')
+    args = parser.parse_args()
     
-    df = generate_data('market_data/in_sample1_30m_NY_LDN.csv')
+    df = generate_data(args.input)
     df['swing_type'] = pd.NA
 
     previous_high = None
@@ -77,4 +81,4 @@ if __name__ == "__main__":
             df.loc[candle.Index, 'swing_type'] = 'LH'
             previous_high = candle.high
 
-    df.to_csv("pivot_data/pivots_30m_NY_LDN.csv")
+    df.to_csv(args.output)

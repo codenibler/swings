@@ -10,31 +10,6 @@ def _parse_datetime_columns(df: pd.DataFrame, columns):
     return df
 
 
-# def _plot_swings(fig: go.Figure, data: pd.DataFrame) -> None:
-#     # """Add swing annotations (HH/HL/LH/LL) to the figure."""
-#     # swing_markers = [
-#     #     ("HH", "high", dict(symbol="triangle-down", size=12, color="firebrick", line=dict(width=1, color="white")), "top center"),
-#     #     ("LH", "high", dict(symbol="triangle-down", size=12, color="#e377c2", line=dict(width=1, color="white")), "top center"),
-#     #     ("LL", "low", dict(symbol="triangle-up", size=12, color="green", line=dict(width=1, color="white")), "bottom center"),
-#     #     ("HL", "low", dict(symbol="triangle-up", size=12, color="seagreen", line=dict(width=1, color="white")), "bottom center"),
-#     # ]
-
-#     for label, price_col, marker, text_position in swing_markers:
-#         mask = data["swing_type"] == label
-#         if mask.any():
-#             fig.add_trace(
-#                 go.Scatter(
-#                     x=data.loc[mask, "datetime"],
-#                     y=data.loc[mask, price_col],
-#                     mode="markers+text",
-#                     marker=marker,
-#                     text=[label] * int(mask.sum()),
-#                     textposition=text_position,
-#                     name=label,
-#                 )
-#             )
-
-
 def _plot_legs(fig: go.Figure, data: pd.DataFrame) -> None:
     """Overlay price legs, with colour by direction."""
     legs = data.dropna(subset=["leg_start_time", "leg_end_time", "leg_start_price", "leg_end_price"])
