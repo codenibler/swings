@@ -39,17 +39,16 @@ def generate_data(dataset):
 
     df = df.drop(columns=['PrevHigh', 'PrevLow', 'PrevPrevLow', 'PrevPrevHigh', 'ema20', 'ema50'])
     df = df.dropna()
-        return df
+    return df
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('--input', type=str, default='market_data/in_sample/in_sample1.csv')
-    parser.add_argument('--output', type=str, default='pivot_data/swings.csv')
+    parser.add_argument('--input', type=str, default='1.csv')
+    parser.add_argument('--output', type=str, default='swings.csv')
     args = parser.parse_args()
     
-    df = generate_data(args.input)
+    df = generate_data(f"market_data/{args.input}")
     df['swing_type'] = pd.NA
 
     previous_high = None
@@ -81,4 +80,4 @@ if __name__ == "__main__":
             df.loc[candle.Index, 'swing_type'] = 'LH'
             previous_high = candle.high
 
-    df.to_csv(args.output)
+    df.to_csv(f"pivot_data/{args.output}")

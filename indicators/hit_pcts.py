@@ -1,5 +1,10 @@
 import pandas as pd 
+import argparse
 from dataclasses import dataclass
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--input", type=str, default="leg_analytics.csv")
+args = parser.parse_args()
 
 @dataclass
 class Leg:
@@ -12,7 +17,7 @@ class Leg:
     fib50: float
     fib75: float
 
-df = pd.read_csv("pivot_data/advanced_leg_analytics_30m_NY_LDN.csv")
+df = pd.read_csv(f"pivot_data/{args.input}")
 df['leg_start_time'] = pd.to_datetime(df['leg_start_time'])
 df['leg_end_time'] = pd.to_datetime(df['leg_end_time'])
 df['datetime'] = pd.to_datetime(df['datetime'])

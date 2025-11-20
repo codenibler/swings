@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.graph_objects as go
-
+import argparse
 
 def _parse_datetime_columns(df: pd.DataFrame, columns):
     """Safely parse datetime columns that may contain NaNs."""
@@ -37,7 +37,11 @@ def _plot_legs(fig: go.Figure, data: pd.DataFrame) -> None:
 
 
 def main():
-    data = pd.read_csv("pivot_data/advanced_leg_analytics_30m_NY_LDN.csv")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", type=str, default="leg_analytics.csv")
+    args = parser.parse_args()
+
+    data = pd.read_csv(f"pivot_data/{args.input}")
     data = _parse_datetime_columns(data, ["datetime", "leg_start_time", "leg_end_time"])
 
     fig = go.Figure()
@@ -53,37 +57,7 @@ def main():
             name="Price",
         )
     )
-    fig.add_trace(
-        go.Scatter(
-            x=data["datetime"][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
-            y=data['fib75'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
-            mode="markers",
-            marker=dict(color='#f41d0b', symbol='diamond-wide', size=25),
-            name="FIB 75",
-        )
-    ),
-    fig.add_trace(
-        go.Scatter(
-            x=data["datetime"][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
-            y=data['fib50'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
-            mode="markers",
-            marker=dict(color='#e58b1a', symbol='diamond-wide',size=25),
-            name="FIB 50",
-        )
-    ),
-    fig.add_trace(
-        go.Scatter(
-            x=data["datetime"][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
-            y=data['fib25'][(data['datetime'] >= data['leg_start_time']) & (data['datetime'] <= data['leg_end_time'])],
-            mode="markers",
-            marker=dict(color='#9fac15', symbol='diamond-wide',size=25),
-            name="FIB 25",
-        )
-    ),
 
-
-
-    # _plot_swings(fig, data)
     _plot_legs(fig, data)
 
     fig.update_layout(
